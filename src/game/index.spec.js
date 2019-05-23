@@ -6,7 +6,8 @@ it("Should create a new game", async () => {
   expect(game).toBeTruthy();
 
   game.addClicker(area01Level01);
-  // await wait(2000);
+
+  await wait(0);
 });
 
 async function wait(ms) {

@@ -3,6 +3,8 @@ const baseClicker = ({ lastClickedFrame, createdAtFrame }) => ({
   autoCount: 0,
   manualCount: 0,
 
+  clickProgress: 0,
+
   lastClickedFrame: lastClickedFrame || null,
   createdAtFrame,
   createdAt: Date.now()

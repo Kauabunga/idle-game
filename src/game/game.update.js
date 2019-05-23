@@ -1,20 +1,22 @@
-/** Game Update Module
- * Called by the game loop, this module will
- * perform any state calculations / updates
- * to properly render the next frame.
- */
 export default function update(store, tFrame) {
   return store.update(state => {
-    const { clickers } = state;
+    const { clickers, workers, config } = state;
+    const { workerLoadTime } = config;
 
-    const updatedClickers = clickers.map(clicker => updateClicker(clicker, tFrame));
+    const nextWorkers = updateWorkers(workers, tFrame, workerLoadTime);
+    const nextClickers = clickers.map(clicker => updateClicker(clicker, tFrame));
 
     return {
       ...state,
-      clickers: updatedClickers,
+      workers: nextWorkers,
+      clickers: nextClickers,
       tFrame
     };
   });
+}
+
+export function updateWorkers(workers, tFrame, workerLoadTime) {
+  return workers || 0;
 }
 
 export function updateClicker(clicker, tFrame) {
