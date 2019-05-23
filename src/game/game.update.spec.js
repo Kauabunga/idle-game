@@ -2,7 +2,7 @@ import { updateClicker } from './game.update';
 import { area01Level01 } from './game.clickers';
 
 // const lastClickedFrame = 1000;
-// const updateClickerBefore = (clicker) => updateClicker(clicker, )
+// const updateClickerBefore = clicker => updateClicker(clicker, tFrame, config, resources, updateResources);
 
 it('BASELINE', () => {
   const clicker = area01Level01({ createdAtFrame: 0 });
@@ -11,6 +11,7 @@ it('BASELINE', () => {
   expect(nextClicker.canClick).toBeTruthy();
   expect(nextClicker).toMatchSnapshot({ createdAt: expect.any(Number) });
 });
+
 describe('MANUAL', () => {
   describe('BEFORE click load', () => {
     it('Should not allow a click to be clicked if it has just been clicked', () => {
