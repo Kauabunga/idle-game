@@ -1,6 +1,6 @@
 export default function update(store, tFrame) {
   return store.update(state => {
-    const { clickers, config, resources, tFrame: previousTFrame } = state;
+    const { clickers, config, resources, multiplier, tFrame: previousTFrame } = state;
 
     const updateResources = (r, count) => {
       Object.keys(r).forEach(resourceKey => {
@@ -12,39 +12,68 @@ export default function update(store, tFrame) {
     let nextClickers = {};
     const diff = tFrame - previousTFrame;
     if (diff) {
-      nextWorkers = updateWorkers(diff, config, resources);
-      nextClickers = clickers.map(clicker => updateClicker(clicker, tFrame, config, resources, updateResources));
+      nextWorkers = updateWorkers(diff, config, multiplier, resources);
+      nextClickers = clickers.map(clicker =>
+        updateClicker(clicker, tFrame, diff, multiplier, resources, updateResources)
+      );
     }
 
     return {
       ...state,
+
       resources: {
         ...state.resources,
         ...nextWorkers
       },
+
       clickers: nextClickers,
-      tFrame
+
+      timePretty: `${Math.floor(tFrame / 1000)} seconds`,
+      tFrame,
+      diff
     };
   });
 }
 
-export function updateWorkers(diff, config, resources) {
+export function updateWorkers(diff, config, multiplier, resources) {
   const workers = resources.workers || 0;
-  const { workerLoadTime, workerLoadMultiplier } = config;
+  const { workerLoadTime } = config;
+  const { workers: workersMultiplier } = multiplier;
 
-  const nextWorkers = workers + workerLoadMultiplier * (diff / workerLoadTime);
+  const nextWorkers = workers + workersMultiplier * (diff / workerLoadTime);
 
-  return {
-    workersFrameProgress: nextWorkers % 1,
-    workers: nextWorkers
-  };
+  return { workers: nextWorkers };
 }
 
-export function updateClicker(clicker, tFrame, config, resources, updateResources) {
+export function updateClicker(clicker, tFrame, diff, multiplier, resources, updateResources) {
   const { id, loadTime, canClick, lastClickedFrame, cost, produce } = clicker;
+  const currentMultiplier = multiplier[id];
+  const currentCount = resources[id] || 0;
 
-  // AUTO
-  // const nextAutoCount = (tFrame - createdAtFrame) / loadTime;
+  // CAN BUY
+  const nextCanBuyLimits = Object.keys(cost).filter(costKey => resources[costKey] < cost[costKey]);
+  const nextCanBuy = nextCanBuyLimits.length === 0;
+
+  // BUY HOW MANY
+
+  //
+  const base = { canBuy: nextCanBuy };
+
+  if (currentMultiplier > 1) {
+    // AUTO
+    const nextAutoCount = (diff / loadTime) * currentMultiplier * currentCount;
+    const nextClickProgress = ((tFrame / loadTime) * currentMultiplier) % 1;
+    updateResources(produce, nextAutoCount);
+
+    return {
+      ...clicker,
+      ...base,
+
+      lastClickedFrame: null,
+      canClick: false,
+      clickProgress: nextClickProgress
+    };
+  }
 
   // MANUAL
   const clickFrameProgress = (lastClickedFrame && (tFrame - lastClickedFrame) / loadTime) || 0;
@@ -53,15 +82,10 @@ export function updateClicker(clicker, tFrame, config, resources, updateResource
   const nextCanClick = !lastClickedFrame || nextCanClickTime;
   let nextLastClickedFrame = lastClickedFrame;
 
-  // CAN BUY
-  const nextCanBuyLimits = Object.keys(cost).filter(costKey => resources[costKey] < cost[costKey]);
-  const nextCanBuy = nextCanBuyLimits.length === 0;
-
   // UPDATE CLICK RESOURCES
   if (lastClickedFrame && !canClick && nextCanClickTime) {
     // Produce resources
-    const count = resources[id] || 0;
-    updateResources(produce, count);
+    updateResources(produce, currentCount);
 
     // Reset click
     nextLastClickedFrame = null;
@@ -69,11 +93,10 @@ export function updateClicker(clicker, tFrame, config, resources, updateResource
 
   return {
     ...clicker,
+    ...base,
 
     lastClickedFrame: nextLastClickedFrame,
     canClick: nextCanClick,
-    clickProgress: nextClickProgress,
-
-    canBuy: nextCanBuy
+    clickProgress: nextClickProgress
   };
 }

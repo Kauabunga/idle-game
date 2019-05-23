@@ -25,11 +25,13 @@
   .left button {
     width: 96px;
     height: 96px;
+   border: 1px solid grey; 
   }
 
   .right button {
     height: 48px;
-    width: 100%;
+    width: 100%;  
+    border: none;    
   }
 
   .progress {

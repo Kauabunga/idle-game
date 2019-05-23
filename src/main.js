@@ -16,7 +16,8 @@ const app = new App({
   props: {
     name: 'world',
     gameStore,
-    state: initState
+    state: initState,
+    handleWorkersChange: gameStore.handleMultiplier('workers')
   }
 });
 

@@ -36,3 +36,13 @@ export const getBuyAction = update => clicker =>
 
     return state;
   });
+
+export const getMultiplierAction = update => id => amount =>
+  update(state => {
+    console.log('getMultiplierAction', id, amount);
+    const { multiplier } = state;
+
+    multiplier[id] += amount;
+
+    return state;
+  });
