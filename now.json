@@ -1,0 +1,5 @@
+{
+  "version": 2,
+  "name": "idle-game",
+  "builds": [{ "src": "package.json", "use": "@now/static-build", "config": { "distDir": "public" } }]
+}

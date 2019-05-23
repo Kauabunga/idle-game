@@ -30,9 +30,10 @@
     "sirv-cli": "^0.4.0"
   },
   "scripts": {
-    "deploy": "npm run build && now",
+    "deploy": "now",
     "test": "jest",
     "build": "rollup -c",
+    "now-build": "npm run build",
     "autobuild": "rollup -c -w",
     "dev": "run-p start:dev autobuild",
     "start": "sirv public",
