@@ -1,43 +1,15 @@
-import { writable } from "svelte/store";
+import { writable } from 'svelte/store';
 
-import Loop from "./game.loop";
-import gameUpdate from "./game.update";
+import Loop from './game.loop';
+import gameUpdate from './game.update';
+import { initState } from './game.init';
+import { getClickAction, getBuyAction } from './game.actions';
 
 function createGameStore() {
-  const initState = { tFrame: 0, clickers: [] };
-  const { subscribe, set, update } = writable({ tFrame: 0, clickers: [] });
+  const { subscribe, set, update } = writable(initState);
 
-  const handleClick = clicker =>
-    update(state => {
-      const { canClick } = clicker;
-      // Check if can be clicked
-      if (!canClick) {
-        return state;
-      }
-
-      console.log(state);
-
-      // Set clicked frame
-      const clickerState = state.clickers[state.clickersMap[clicker.id]];
-      clickerState.lastClickedFrame = state.tFrame;
-
-      return state;
-    });
-
-  const handleBuy = clicker =>
-    update(state => {
-      const { canBuy } = clicker;
-      // Check if can buy
-      if (!canBuy) {
-        return state;
-      }
-
-      // Set clicked frame
-      const clickerState = state.clickers[state.clickersMap[clicker.id]];
-      clickerState.lastBuyFrame = state.tFrame;
-
-      return state;
-    });
+  const handleClick = getClickAction(update);
+  const handleBuy = getBuyAction(update);
 
   return {
     subscribe,

@@ -1,54 +1,74 @@
 export default function update(store, tFrame) {
   return store.update(state => {
-    const { clickers, workers, config } = state;
-    const { workerLoadTime } = config;
+    const { clickers, config, resources, tFrame: previousTFrame } = state;
 
-    const nextWorkers = updateWorkers(workers, tFrame, workerLoadTime);
-    const nextClickers = clickers.map(clicker => updateClicker(clicker, tFrame));
+    const updateResources = (r, count) => {
+      Object.keys(r).forEach(resourceKey => {
+        resources[resourceKey] = (resources[resourceKey] || 0) + r[resourceKey] * (count || 1);
+      });
+    };
+
+    let nextWorkers = {};
+    let nextClickers = {};
+    const diff = tFrame - previousTFrame;
+    if (diff) {
+      nextWorkers = updateWorkers(diff, config, resources);
+      nextClickers = clickers.map(clicker => updateClicker(clicker, tFrame, config, resources, updateResources));
+    }
 
     return {
       ...state,
-      workers: nextWorkers,
+      resources: {
+        ...state.resources,
+        ...nextWorkers
+      },
       clickers: nextClickers,
       tFrame
     };
   });
 }
 
-export function updateWorkers(workers, tFrame, workerLoadTime) {
-  return workers || 0;
+export function updateWorkers(diff, config, resources) {
+  const workers = resources.workers || 0;
+  const { workerLoadTime, workerLoadMultiplier } = config;
+
+  const nextWorkers = workers + workerLoadMultiplier * (diff / workerLoadTime);
+
+  return {
+    workersFrameProgress: nextWorkers % 1,
+    workers: nextWorkers
+  };
 }
 
-export function updateClicker(clicker, tFrame) {
-  const { loadTime, createdAtFrame, canClick, lastClickedFrame, manualCount } = clicker;
+export function updateClicker(clicker, tFrame, config, resources, updateResources) {
+  const { id, loadTime, canClick, lastClickedFrame, cost, produce } = clicker;
 
-  const nextAutoCount = (tFrame - createdAtFrame) / loadTime;
+  // AUTO
+  // const nextAutoCount = (tFrame - createdAtFrame) / loadTime;
 
-  // Compute can click state for displaying disabled state
+  // MANUAL
   const clickFrameProgress = (lastClickedFrame && (tFrame - lastClickedFrame) / loadTime) || 0;
-
   const nextCanClickTime = clickFrameProgress > 1;
   const nextClickProgress = (!nextCanClickTime && clickFrameProgress % 1) || 0;
-  let nextManualCount = manualCount || 0;
-
+  const nextCanClick = !lastClickedFrame || nextCanClickTime;
   let nextLastClickedFrame = lastClickedFrame;
+
+  // CAN BUY
+  const nextCanBuyLimits = Object.keys(cost).filter(costKey => resources[costKey] < cost[costKey]);
+  const nextCanBuy = nextCanBuyLimits.length === 0;
+
+  // UPDATE CLICK RESOURCES
   if (lastClickedFrame && !canClick && nextCanClickTime) {
-    nextManualCount += 1;
+    // Produce resources
+    const count = resources[id] || 0;
+    updateResources(produce, count);
+
+    // Reset click
     nextLastClickedFrame = null;
   }
 
-  // const canClick = canClickTime && !auto
-  const nextCanClick = !lastClickedFrame || nextCanClickTime;
-
-  // Compute can buy state
-  const nextCanBuy = true;
-
-  const count = nextManualCount;
   return {
     ...clicker,
-    count,
-    autoCount: nextAutoCount,
-    manualCount: nextManualCount,
 
     lastClickedFrame: nextLastClickedFrame,
     canClick: nextCanClick,

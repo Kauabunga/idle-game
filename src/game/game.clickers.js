@@ -10,45 +10,69 @@ const baseClicker = ({ lastClickedFrame, createdAtFrame }) => ({
   createdAt: Date.now()
 });
 
+const WORKERS = 'workers';
+
+export const AREA_01_RESOURCE = 'area01';
+export const AREA_01_LEVEL_01 = 'area01Level01';
+export const AREA_01_LEVEL_02 = 'area01Level02';
+export const AREA_01_LEVEL_03 = 'area01Level03';
+export const AREA_01_LEVEL_04 = 'area01Level04';
+
 export const area01Level01 = options => ({
   ...baseClicker(options),
-  id: "area01Level01",
-  name: "First one",
+  id: AREA_01_LEVEL_01,
+  name: 'Lumberjack',
   loadTime: 2000,
+
   cost: {
-    workers: 10
+    [WORKERS]: 1
+  },
+  produce: {
+    [AREA_01_RESOURCE]: 1
   }
 });
 
 export const area01Level02 = options => ({
   ...baseClicker(options),
-  id: "area01Level02",
-  name: "Second one",
+  id: AREA_01_LEVEL_02,
+  name: 'Chainsaw',
   loadTime: 3000,
+
   cost: {
-    workers: 10,
-    area01Level01: 10
+    [WORKERS]: 2,
+    [AREA_01_LEVEL_01]: 2
+  },
+  produce: {
+    [AREA_01_LEVEL_01]: 1
   }
 });
 
 export const area01Level03 = options => ({
   ...baseClicker(options),
-  id: "area01Level03",
-  name: "Third one",
+  id: AREA_01_LEVEL_03,
+  name: 'Third one',
   loadTime: 5000,
+
   cost: {
-    workers: 10,
-    area01Level02: 20
+    [WORKERS]: 5,
+    [AREA_01_LEVEL_02]: 5
+  },
+  produce: {
+    [AREA_01_LEVEL_02]: 1
   }
 });
 
 export const area01Level04 = options => ({
   ...baseClicker(options),
-  id: "area01Level04",
-  name: "Fourth one",
+  id: AREA_01_LEVEL_04,
+  name: 'Fourth one',
   loadTime: 7500,
+
   cost: {
-    workers: 10,
-    area01Level02: 50
+    [WORKERS]: 10,
+    [AREA_01_LEVEL_03]: 10
+  },
+  produce: {
+    [AREA_01_LEVEL_03]: 1
   }
 });

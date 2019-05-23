@@ -1,6 +1,6 @@
-import App from "./App.svelte";
-import { Game } from "./game";
-import { area01Level01, area01Level04, area01Level03, area01Level02 } from "./game/game.clickers";
+import App from './App.svelte';
+import { Game, initState } from './game';
+import { area01Level01, area01Level04, area01Level03, area01Level02 } from './game/game.clickers';
 
 const game = new Game();
 
@@ -14,8 +14,9 @@ game.addClicker(area01Level04);
 const app = new App({
   target: document.body,
   props: {
-    name: "world",
-    gameStore
+    name: 'world',
+    gameStore,
+    state: initState
   }
 });
 
