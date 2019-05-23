@@ -1,4 +1,15 @@
-export const area01Level01 = () => ({
+const baseClicker = ({ lastClickedFrame, createdAtFrame }) => ({
+  count: 0,
+  autoCount: 0,
+  manualCount: 0,
+
+  lastClickedFrame: lastClickedFrame || null,
+  createdAtFrame,
+  createdAt: Date.now()
+});
+
+export const area01Level01 = options => ({
+  ...baseClicker(options),
   id: "area01Level01",
   name: "First one",
   loadTime: 2000,
@@ -7,7 +18,8 @@ export const area01Level01 = () => ({
   }
 });
 
-export const area01Level02 = () => ({
+export const area01Level02 = options => ({
+  ...baseClicker(options),
   id: "area01Level02",
   name: "Second one",
   loadTime: 3000,
@@ -17,7 +29,8 @@ export const area01Level02 = () => ({
   }
 });
 
-export const area01Level03 = () => ({
+export const area01Level03 = options => ({
+  ...baseClicker(options),
   id: "area01Level03",
   name: "Third one",
   loadTime: 5000,
@@ -27,7 +40,8 @@ export const area01Level03 = () => ({
   }
 });
 
-export const area01Level04 = () => ({
+export const area01Level04 = options => ({
+  ...baseClicker(options),
   id: "area01Level04",
   name: "Fourth one",
   loadTime: 7500,

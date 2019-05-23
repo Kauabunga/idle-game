@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`BASELINE 1`] = `
+Object {
+  "autoCount": 0,
+  "canBuy": true,
+  "canClick": true,
+  "clickProgress": 0,
+  "cost": Object {
+    "workers": 10,
+  },
+  "count": 0,
+  "createdAt": Any<Number>,
+  "createdAtFrame": 0,
+  "id": "area01Level01",
+  "lastClickedFrame": null,
+  "loadTime": 2000,
+  "manualCount": 0,
+  "name": "First one",
+}
+`;

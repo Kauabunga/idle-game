@@ -3,7 +3,8 @@
   "type": "module",
   "version": "1.0.0",
   "dependencies": {
-    "svelte": "^3.0.0"
+    "svelte": "^3.0.0",
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "@babel/core": "^7.4.5",

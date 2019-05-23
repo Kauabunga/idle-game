@@ -17,26 +17,41 @@ export default function update(store, tFrame) {
   });
 }
 
-function updateClicker(clicker, tFrame) {
-  const { loadTime, createdAtFrame, lastClickedFrame, manualCount } = clicker;
+export function updateClicker(clicker, tFrame) {
+  const { loadTime, createdAtFrame, canClick, lastClickedFrame, manualCount } = clicker;
 
   const nextAutoCount = (tFrame - createdAtFrame) / loadTime;
-  const nextManualCount = manualCount || 0;
-  const count = nextAutoCount + nextManualCount;
 
   // Compute can click state for displaying disabled state
-  const canClick = (tFrame - (lastClickedFrame || 0)) / loadTime > 1;
+  const clickFrameProgress = (lastClickedFrame && (tFrame - lastClickedFrame) / loadTime) || 0;
+
+  const nextCanClickTime = clickFrameProgress > 1;
+  const nextClickProgress = (!nextCanClickTime && clickFrameProgress % 1) || 0;
+  let nextManualCount = manualCount || 0;
+
+  let nextLastClickedFrame = lastClickedFrame;
+  if (lastClickedFrame && !canClick && nextCanClickTime) {
+    nextManualCount += 1;
+    nextLastClickedFrame = null;
+  }
+
+  // const canClick = canClickTime && !auto
+  const nextCanClick = !lastClickedFrame || nextCanClickTime;
 
   // Compute can buy state
+  const nextCanBuy = true;
 
-  const canBuy = true;
-
+  const count = nextManualCount;
   return {
     ...clicker,
     count,
-    canClick,
-    canBuy,
     autoCount: nextAutoCount,
-    manualCount: nextManualCount
+    manualCount: nextManualCount,
+
+    lastClickedFrame: nextLastClickedFrame,
+    canClick: nextCanClick,
+    clickProgress: nextClickProgress,
+
+    canBuy: nextCanBuy
   };
 }
