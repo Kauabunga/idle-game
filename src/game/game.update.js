@@ -47,21 +47,20 @@ export function updateWorkers(diff, config, multiplier, resources) {
 
 export function updateClicker(clicker, tFrame, diff, multiplier, resources, updateResources) {
   const { id, loadTime, canClick, lastClickedFrame, cost, produce } = clicker;
-  const currentMultiplier = multiplier[id];
-  const currentCount = resources[id] || 0;
+  const currentMultiplier = multiplier[id] || 1;
+  const currentCount = (resources[id] || 0) * currentMultiplier;
 
   // CAN BUY
   const nextCanBuyLimits = Object.keys(cost).filter(costKey => resources[costKey] < cost[costKey]);
   const nextCanBuy = nextCanBuyLimits.length === 0;
 
-  // BUY HOW MANY
+  // TODO: CAN BUY MAX
 
-  //
   const base = { canBuy: nextCanBuy };
 
   if (currentMultiplier > 1) {
     // AUTO
-    const nextAutoCount = (diff / loadTime) * currentMultiplier * currentCount;
+    const nextAutoCount = (diff / loadTime) * currentCount;
     const nextClickProgress = ((tFrame / loadTime) * currentMultiplier) % 1;
     updateResources(produce, nextAutoCount);
 
